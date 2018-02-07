@@ -32,8 +32,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
-import com.metamx.emitter.core.NoopEmitter;
-import com.metamx.emitter.service.ServiceEmitter;
+import io.druid.java.util.emitter.core.NoopEmitter;
+import io.druid.java.util.emitter.service.ServiceEmitter;
 import io.druid.collections.StupidPool;
 import io.druid.data.input.InputRow;
 import io.druid.data.input.impl.DimensionsSpec;
@@ -211,7 +211,7 @@ public class CalciteTests
         @Override
         public void configure(final Binder binder)
         {
-          binder.bind(Key.get(ObjectMapper.class, Json.class)).toInstance(TestHelper.getJsonMapper());
+          binder.bind(Key.get(ObjectMapper.class, Json.class)).toInstance(TestHelper.makeJsonMapper());
 
           // This Module is just to get a LookupReferencesManager with a usable "lookyloo" lookup.
 
@@ -245,7 +245,7 @@ public class CalciteTests
               new ScanQueryRunnerFactory(
                   new ScanQueryQueryToolChest(
                       new ScanQueryConfig(),
-                      new DefaultGenericQueryMetricsFactory(TestHelper.getJsonMapper())
+                      new DefaultGenericQueryMetricsFactory(TestHelper.makeJsonMapper())
                   ),
                   new ScanQueryEngine()
               )
@@ -254,7 +254,7 @@ public class CalciteTests
               SelectQuery.class,
               new SelectQueryRunnerFactory(
                   new SelectQueryQueryToolChest(
-                      TestHelper.getJsonMapper(),
+                      TestHelper.makeJsonMapper(),
                       QueryRunnerTestHelper.NoopIntervalChunkingQueryRunnerDecorator(),
                       SELECT_CONFIG_SUPPLIER
                   ),

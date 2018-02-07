@@ -96,7 +96,8 @@ public class DruidAvaticaHandlerTest
     @Override
     public int getMaxConnections()
     {
-      return 2;
+      // This must match the number of Connection objects created in setUp()
+      return 3;
     }
 
     @Override
@@ -255,7 +256,7 @@ public class DruidAvaticaHandlerTest
         "SELECT __time, CAST(__time AS DATE) AS t2 FROM druid.foo LIMIT 1"
     );
 
-    final DateTimeZone timeZone = DateTimeZone.forID("America/Los_Angeles");
+    final DateTimeZone timeZone = DateTimes.inferTzfromString("America/Los_Angeles");
     final DateTime localDateTime = new DateTime("2000-01-01T00Z", timeZone);
 
     final List<Map<String, Object>> resultRows = getRows(resultSet);
@@ -667,9 +668,13 @@ public class DruidAvaticaHandlerTest
     final Connection connection2 = DriverManager.getConnection(url);
     final Statement statement2 = connection2.createStatement();
 
-    expectedException.expect(AvaticaClientRuntimeException.class);
-    expectedException.expectMessage("Too many connections, limit is[2]");
     final Connection connection3 = DriverManager.getConnection(url);
+    final Statement statement3 = connection3.createStatement();
+
+    expectedException.expect(AvaticaClientRuntimeException.class);
+    expectedException.expectMessage("Too many connections, limit is[3]");
+
+    final Connection connection4 = DriverManager.getConnection(url);
   }
 
   @Test
@@ -682,6 +687,9 @@ public class DruidAvaticaHandlerTest
     connection2.createStatement().close();
 
     final Connection connection3 = DriverManager.getConnection(url);
+    connection3.createStatement().close();
+
+    final Connection connection4 = DriverManager.getConnection(url);
     Assert.assertTrue(true);
   }
 

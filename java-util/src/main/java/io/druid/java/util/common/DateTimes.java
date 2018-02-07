@@ -21,9 +21,12 @@ package io.druid.java.util.common;
 
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.util.TimeZone;
 
 public final class DateTimes
 {
@@ -37,6 +40,17 @@ public final class DateTimes
   public static final UtcFormatter ISO_DATE_OR_TIME_WITH_OFFSET = wrapFormatter(
       ISODateTimeFormat.dateTimeParser().withOffsetParsed()
   );
+
+  public static DateTimeZone inferTzfromString(String tzId)
+  {
+    try {
+      return DateTimeZone.forID(tzId);
+    }
+    catch (IllegalArgumentException e) {
+      // also support Java timezone strings
+      return DateTimeZone.forTimeZone(TimeZone.getTimeZone(tzId));
+    }
+  }
 
   /**
    * Simple wrapper class to enforce UTC Chronology in formatter. Specifically, it will use
@@ -75,6 +89,17 @@ public final class DateTimes
   public static DateTime of(String instant)
   {
     return new DateTime(instant, ISOChronology.getInstanceUTC());
+  }
+
+  public static DateTime of(
+      int year,
+      int monthOfYear,
+      int dayOfMonth,
+      int hourOfDay,
+      int minuteOfHour
+  )
+  {
+    return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, ISOChronology.getInstanceUTC());
   }
 
   public static DateTime nowUtc()

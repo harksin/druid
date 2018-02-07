@@ -25,8 +25,8 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.metamx.emitter.EmittingLogger;
-import com.metamx.emitter.service.ServiceEmitter;
+import io.druid.java.util.emitter.EmittingLogger;
+import io.druid.java.util.emitter.service.ServiceEmitter;
 import io.druid.indexing.common.TaskLock;
 import io.druid.indexing.common.task.NoopTask;
 import io.druid.indexing.common.task.Task;
@@ -138,16 +138,7 @@ public class SegmentAllocateActionTest
 
     final TaskLock partyLock = Iterables.getOnlyElement(
         FluentIterable.from(taskActionTestKit.getTaskLockbox().findLocksForTask(task))
-                      .filter(
-                          new Predicate<TaskLock>()
-                          {
-                            @Override
-                            public boolean apply(TaskLock input)
-                            {
-                              return input.getInterval().contains(PARTY_TIME);
-                            }
-                          }
-                      )
+                      .filter(input -> input.getInterval().contains(PARTY_TIME))
     );
 
     assertSameIdentifier(

@@ -51,7 +51,7 @@ public abstract class HadoopTask extends AbstractTask
   private static final Logger log = new Logger(HadoopTask.class);
   private static final ExtensionsConfig extensionsConfig;
 
-  final static Injector injector = GuiceInjectors.makeStartupInjector();
+  static final Injector injector = GuiceInjectors.makeStartupInjector();
 
   static {
     extensionsConfig = injector.getInstance(ExtensionsConfig.class);
@@ -147,7 +147,7 @@ public abstract class HadoopTask extends AbstractTask
 
     final List<URL> extensionURLs = Lists.newArrayList();
     for (final File extension : Initialization.getExtensionFilesToLoad(extensionsConfig)) {
-      final ClassLoader extensionLoader = Initialization.getClassLoaderForExtension(extension);
+      final ClassLoader extensionLoader = Initialization.getClassLoaderForExtension(extension, false);
       extensionURLs.addAll(Arrays.asList(((URLClassLoader) extensionLoader).getURLs()));
     }
 
@@ -161,7 +161,7 @@ public abstract class HadoopTask extends AbstractTask
             finalHadoopDependencyCoordinates,
             extensionsConfig
         )) {
-      final ClassLoader hadoopLoader = Initialization.getClassLoaderForExtension(hadoopDependency);
+      final ClassLoader hadoopLoader = Initialization.getClassLoaderForExtension(hadoopDependency, false);
       localClassLoaderURLs.addAll(Arrays.asList(((URLClassLoader) hadoopLoader).getURLs()));
     }
 
